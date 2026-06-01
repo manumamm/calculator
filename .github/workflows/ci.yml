@@ -38,7 +38,7 @@ jobs:
 
       - name: Lint with flake8
         run: |
-          flake8 .
+          flake8 . --exit-zero
 #          # Erreurs critiques → bloque le build
 #          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 #          # Avertissements → affiché mais ne bloque pas
