@@ -49,7 +49,7 @@ jobs:
           pytest tests/
 
   # ── JOB 2 : Trivy (tourne en parallèle avec test) ──
-  trivy-scan
+  trivy-scan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
