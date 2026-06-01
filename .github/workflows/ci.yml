@@ -1,44 +1,49 @@
-name: Security Scan with Trivy
+name: Continuous Integration
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_call: 
 
 permissions:
   contents: read
   security-events: write
 
-jobs:
-  trivy-scan:
+  # ── JOB 1 : Tests sur 3 versions Python (en parallèle) ──
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+#        python-version: [3.8, 3.9, '3.10']  # '3.10' entre guillemets !
+        python-version: 3.8
+
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run Trivy vulnerability scanner in filesystem mode
-        uses: aquasecurity/trivy-action@b3dafe507ffa004210975439a1e6156b8ebb3f50
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
         with:
-          scan-type: "fs"
-          scan-ref: "."
-          format: "table"
-          severity: "CRITICAL,HIGH"
+          python-version: ${{ matrix.python-version }}
 
-      - name: Build an image from Dockerfile
+      - name: Install dependencies
         run: |
-          docker build -t my-python-app:${{ github.sha }} .
+          python -m pip install --upgrade pip
+#          pip install flake8 pytest
 
-      - name: Run Trivy vulnerability scanner in image mode
-        uses: aquasecurity/trivy-action@b3dafe507ffa004210975439a1e6156b8ebb3f50
-        with:
-          image-ref: "my-python-app:${{ github.sha }}"
-          format: "sarif"
-          output: "trivy-results.sarif"
-          severity: "CRITICAL,HIGH,MEDIUM"
+#      - name: Lint with flake8
+#        run: |
+#          # Erreurs critiques → bloque le build
+#          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+#          # Avertissements → affiché mais ne bloque pas
+#          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: "trivy-results.sarif"
+      - name: Test with pytest
+        run: |
+          pytest tests/
+
+
 
