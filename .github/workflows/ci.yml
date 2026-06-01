@@ -11,13 +11,14 @@ permissions:
   contents: read
   security-events: write
 
+jobs:
 # ── JOB 1 : Tests sur 3 versions Python (en parallèle) ──
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
 #        python-version: [3.8, 3.9, '3.10']  # '3.10' entre guillemets !
-        python-version: 3.8
+        python-version: ['3.8']
 
 
     steps:
