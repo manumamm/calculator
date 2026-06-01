@@ -11,7 +11,7 @@ permissions:
   contents: read
   security-events: write
 
-  # ── JOB 1 : Tests sur 3 versions Python (en parallèle) ──
+# ── JOB 1 : Tests sur 3 versions Python (en parallèle) ──
   test:
     runs-on: ubuntu-latest
     strategy:
